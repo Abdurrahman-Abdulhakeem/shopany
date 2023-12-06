@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop | Any</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <section class="hero">
+        <div class="container">
+            <div class="overlay"></div>
+            <header>
+                <h1>Shopany</h1>
+                <nav id="navbar">
+                    <li> <a href="index.html" class="active">Home</a> </li>
+                    <li> <a href="about.html">About</a> </li>
+                    <li> <a href="faqs.html">FAQs</a> </li>
+                </nav>
+                <button class="btn">Register</button>
+
+                <div class="hamburger">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </header>
+
+            <div class="showcase flex">
+                <div>
+                    <h1>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Unde, id!</h1>
+                    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Unde incidunt natus veniam illum dolor
+                        vel aliquid est repellendus omnis ullam.</p>
+                </div>
+                <div>
+                    <div class="fone-overlay"></div>
+                    <img src="images/shop-fone.png" alt="">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="overview">
+        <div class="container">
+            <h2>Lorem, ipsum dolor.</h2>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit asperiores recusandae ut
+                necessitatibus quos veritatis labore similique tempore quae, voluptatem officiis! In, enim, amet
+                reprehenderit suscipit cum perspiciatis qui, tempore iure adipisci harum velit modi! Ipsa eum neque non
+                magnam.</p>
+        </div>
+    </section>
+
+    <section class="main">
+        <div class="container flex">
+            <div>
+                <h1>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque.</h1>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae dolores minima rerum modi quam
+                    aliquid mollitia ea error, esse nihil soluta possimus tenetur totam cumque.</p>
+
+                    <a href="" class="btn">Learn more</a>
+            </div>
+            <div>
+                <img src="images/shop-love.png" alt="">
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="container flex" id="counter">
+            <div>
+                <h3 id="register">1</h3>
+                <p>Registered</p>
+            </div>
+            <div>
+                <h3 id="transaction">1</h3>
+                <p>Transactions</p>
+            </div>
+
+            <div>
+                <h3>Instant</h3>
+                <p>Delivery</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="reviews">
+        <div class="container flex">
+            <div class="box">
+                <h1>''</h1>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum sequi pariatur enim. Error officia quod quia sunt libero asperiores! </p>
+                <p><em>Rammy</em></p>
+            </div>
+            <div class="box">
+                <h1>''</h1>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum sequi pariatur enim. Error officia quod quia sunt libero asperiores! </p>
+                <p><em>Rammy</em></p>
+            </div>
+            <div class="box">
+                <h1>''</h1>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum sequi pariatur enim. Error officia quod quia sunt libero asperiores! </p>
+                <p><em>Rammy</em></p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container flex">
+            <div>
+                <h3>Shopany</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod dolores sapiente debitis laboriosam minus dignissimos mollitia enim a, distinctio consequatur quam odio ex explicabo corrupti!</p>
+            </div>
+            <div>
+                <h3>Useful Links</h3>
+                <p> <a href="index.html">Home</a> </p>
+                <p> <a href="about.html">About</a> </p>
+                <p> <a href="faqs.html">FAQs</a> </p>
+                <p> <a href="">Login</a> </p>
+            </div>
+            <div>
+                <h3>Social Media's</h3>
+                <span>fbk</span>
+                <span>insta</span>
+                <span>twt</span>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+
+        const hamburger = document.querySelector(".hamburger");
+        const navbar = document.getElementById("navbar");
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navbar.classList.toggle('active');
+        })
+        
+        function startCounter() {
+            let regCount = 0;
+            let transCount = 0;
+            const regElement = document.getElementById('register');
+            const transElement = document.getElementById('transaction');
+
+            const intervalId = setInterval(() => {
+                regCount++;
+                regElement.textContent = regCount;
+
+                if (regCount === 500) {
+                    clearInterval(intervalId);
+                }
+            }, 1)
+
+
+            const transInterval = setInterval(() => {
+                transCount++;
+                transElement.textContent = transCount;
+
+                if (transCount === 2000) {
+                    clearInterval(transInterval);
+                }
+            }, 1)
+
+        }
+
+
+        const counterSection = document.getElementById("counter");
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    startCounter();
+                    observer.disconnect();
+                }
+            });
+        }, {threshold: 0.5});
+
+        observer.observe(counterSection);
+    </script>
+
+</body>
+
+</html>

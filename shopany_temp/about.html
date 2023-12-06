@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop | Any</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <section class="hero">
+        <div class="container">
+            <div class="overlay"></div>
+            <header>
+                <h1>Shopany</h1>
+                <nav id="navbar">
+                    <li> <a href="index.html">Home</a> </li>
+                    <li> <a href="about.html" class="active">About</a> </li>
+                    <li> <a href="faqs.html">FAQs</a> </li>
+                </nav>
+                <button class="btn">Register</button>
+
+                <div class="hamburger">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </header>
+
+            <div class="showcase abt">
+                <div>
+                    <h1>About Us!</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about">
+        <div class="container">
+            <h2>Lorem, ipsum dolor.</h2>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit asperiores recusandae ut
+                necessitatibus quos veritatis labore similique tempore quae, voluptatem officiis! In, enim, amet
+                reprehenderit suscipit cum perspiciatis qui, tempore iure adipisci harum velit modi! Ipsa eum neque non
+                magnam.</p>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veritatis nihil temporibus soluta hic ad ipsum
+                totam praesentium, et, nam sunt vero ipsa corrupti. Eos sed, assumenda illum totam minus corrupti quod
+                dicta voluptate deleniti laborum excepturi blanditiis quaerat nihil autem perferendis quas temporibus
+                quae ad amet quidem iusto eum in.</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container flex">
+            <div>
+                <h3>Shopany</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod dolores sapiente debitis laboriosam
+                    minus dignissimos mollitia enim a, distinctio consequatur quam odio ex explicabo corrupti!</p>
+            </div>
+            <div>
+                <h3>Useful Links</h3>
+                <p> <a href="index.html">Home</a> </p>
+                <p> <a href="about.html">About</a> </p>
+                <p> <a href="faqs.html">FAQs</a> </p>
+                <p> <a href="">Login</a> </p>
+            </div>
+            <div>
+                <h3>Social Media's</h3>
+                <span>fbk</span>
+                <span>insta</span>
+                <span>twt</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+
+        const hamburger = document.querySelector(".hamburger");
+        const navbar = document.getElementById("navbar");
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navbar.classList.toggle('active');
+        })
+
+    </script>
+
+</body>
+
+</html>
