@@ -407,11 +407,16 @@ footer a {
 
     .showcase.flex div:last-child {
         align-self: center;
-        margin-top: 70px;
+        margin-top: 50px;
     }
 
     .showcase.flex div:last-child img {
-        height: 250px;
+        height: 200px;
+    }
+
+    .fone-overlay {
+        height: 200px;
+        width: 250px;
     }
 
     .main .flex {
