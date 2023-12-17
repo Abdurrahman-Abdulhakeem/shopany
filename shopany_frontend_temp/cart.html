@@ -15,8 +15,16 @@
         <aside class="sidebar">
             <h1>Shopany</h1>
             <nav>
-                <li><a href="cart.html">Cart</a></li>
+                <li><a class="active" href="cart.html">Cart</a></li>
                 <li><a href="index.html">Dashboard</a></li>
+                <li class="cat"><a href="#">Categories</a>
+                    <ul class="inner-category">
+                        <li><a href="">Sneakers</a></li>
+                        <li><a href="">Food stuff</a></li>
+                        <li><a href="">Groceries</a></li>
+                    </ul>
+                </li>
+                <li><a href="index.html">Developer</a></li>
                 <li><a href="profile.html">Profile</a></li>
                 <li><a href="">Logout</a></li>
             </nav>
@@ -92,6 +100,16 @@
     </div>
 
 
+    <script>
+
+        const hamburger = document.querySelector(".cat");
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+    
+        })
+
+
+    </script>
 
 </body>
 

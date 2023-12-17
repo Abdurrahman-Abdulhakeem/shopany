@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopany :: Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="grid two">
+
+        <aside class="sidebar">
+            <h1>Shopany</h1>
+            <nav>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="index.html">Dashboard</a></li>
+                <li class="cat"><a href="#">Categories</a>
+                    <ul class="inner-category">
+                        <li><a href="">Sneakers</a></li>
+                        <li><a href="">Food stuff</a></li>
+                        <li><a href="">Groceries</a></li>
+                    </ul>
+                </li>
+                <li><a href="index.html">Developer</a></li>
+                <li><a class="active" href="profile.html">Profile</a></li>
+                <li><a href="">Logout</a></li>
+            </nav>
+        </aside>
+
+
+        <main class="dashboard">
+
+            <div class="profile">
+                <div class="profile-bg">
+                    <img src="images/rrammy.jpg" alt="profile-bg" />
+                    <div>
+                        <input type="file" hidden id="profile-pic" accept="image/*" />
+                        <label for="profile-pic" class="btn">Update Logo</label>
+                    </div>
+                </div>
+                <div class="profile-details">
+                    <p class="view">Rammy</p>
+                    <p class="view">Rammy</p>
+                </div>
+                <div class="profile-details">
+                    <p class="view">rammy@gmail.com</p>
+                    <p class="view">08000000000</p>
+                </div>
+
+                <div class="password-section">
+                    <h2>Change Password</h2>
+                    <div>
+                    <input type="password" name="new-pass" placeholder="New password" />
+                </div>
+                <div>
+                    <input type="password" name="new-pass" placeholder="Confirm new password" />
+                </div>
+                    <input type="submit" value="Change Password"  class="btn"/>
+                </div>
+            </div>
+
+        </main>
+
+
+    </div>
+
+
+    <script>
+
+        const hamburger = document.querySelector(".cat");
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+    
+        })
+
+
+    </script>
+
+</body>
+
+</html>
