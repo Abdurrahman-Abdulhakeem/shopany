@@ -24,6 +24,12 @@
                         <li><a href="">Groceries</a></li>
                     </ul>
                 </li>
+                <li class="cat"><a class="active" href="#">Orders</a>
+                    <ul class="inner-category">
+                        <li><a href="">Pending</a></li>
+                        <li><a href="">Approved</a></li>
+                    </ul>
+                </li>
                 <li><a href="index.html">Developer</a></li>
                 <li><a class="active" href="profile.html">Profile</a></li>
                 <li><a href="">Logout</a></li>
@@ -33,12 +39,18 @@
 
         <main class="dashboard">
 
+            <div class="main-hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+
             <div class="profile">
                 <div class="profile-bg">
                     <img src="images/rrammy.jpg" alt="profile-bg" />
                     <div>
                         <input type="file" hidden id="profile-pic" accept="image/*" />
-                        <label for="profile-pic" class="btn">Update Logo</label>
+                        <label for="profile-pic" class="btn">Update Image</label>
                     </div>
                 </div>
                 <div class="profile-details">
@@ -70,9 +82,20 @@
 
     <script>
 
-        const hamburger = document.querySelector(".cat");
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
+        
+        const mainHamburger = document.querySelector(".main-hamburger");
+        const sidebar = document.querySelector(".sidebar");
+        mainHamburger.addEventListener('click', () => {
+            mainHamburger.classList.toggle('active');
+            sidebar.classList.toggle('active');
+        })
+
+        
+        const hamburger = document.querySelectorAll(".cat");
+        hamburger.forEach(burger => {
+            burger.addEventListener('click', () => {
+                burger.classList.toggle('active');
+        })
     
         })
 
