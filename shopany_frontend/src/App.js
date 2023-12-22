@@ -13,25 +13,15 @@ function App() {
       <HamProvider>
         <Routes>
           <Route path='/' index element={<LoginScreen />}/>
-        </Routes>
-
-        <Routes>
+        
           <Route path='/login' element={<LoginScreen />}/>
-        </Routes>
-
-        <Routes>
+        
           <Route path='/register' element={<RegisterScreen />}/>
-        </Routes>
-
-        <Routes>
+        
           <Route path='/dashboard' element={<Dashboard />}/>
-        </Routes>
-
-        <Routes>
+        
           <Route path='/cart' element={<Cart />} />
-        </Routes>
-
-        <Routes>
+        
           <Route path='/profile' element={<Profile />} />
         </Routes>
         </HamProvider>
