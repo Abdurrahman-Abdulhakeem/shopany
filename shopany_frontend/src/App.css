@@ -124,12 +124,12 @@ input::placeholder {
 }
 
 .grid.two {
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 230px 1fr;
 }
 
 
 .sidebar {
-    width: 200px;
+    width: 230px;
     background-color: var(--prm-color);
     position: fixed;
     height: 100%;
@@ -644,7 +644,7 @@ table tbody td img {
     }
 
     .sidebar {
-        transform: translateX(-200px);
+        transform: translateX(-230px);
         transition: 0.5s;
     }
 
