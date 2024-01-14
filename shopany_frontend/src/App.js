@@ -14,6 +14,7 @@ function App() {
         <Routes>
           <Route path='/' index element={<LoginScreen />}/>
         
+          
           <Route path='/login' element={<LoginScreen />}/>
         
           <Route path='/register' element={<RegisterScreen />}/>
