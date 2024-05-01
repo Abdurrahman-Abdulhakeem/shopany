@@ -10,6 +10,9 @@ function reducer(state, action) {
         case "toggleBar" :
             return {...state, isOpen: !state.isOpen}
         
+        case "closeBar":
+            return {...state, isOpen: false}
+        
         default:
             return state
 

@@ -7,7 +7,21 @@ import HamProvider from './components/providers/HamProvider';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
+import ProductDetail from './screens/ProductDetail';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { getProducts } from './redux/productSlice';
+
+
 function App() {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(getProducts())
+}, [dispatch])
+
   return (
     <Router>
       <HamProvider>
@@ -20,12 +34,16 @@ function App() {
           <Route path='/register' element={<RegisterScreen />}/>
         
           <Route path='/dashboard' element={<Dashboard />}/>
+
+          <Route path='/product/:productId' element={<ProductDetail />} />
         
           <Route path='/cart' element={<Cart />} />
         
           <Route path='/profile' element={<Profile />} />
         </Routes>
         </HamProvider>
+
+        <ToastContainer />
     </Router>
     
   );

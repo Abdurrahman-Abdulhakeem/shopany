@@ -1,137 +1,126 @@
-import Base from '../components/Base'
-import { Hamburger } from '../components/Sidebar'
-import Addcart, { CartAction } from '../components/Addcart'
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-function productDetail() {
+import Base from "../components/Base";
+import { Hamburger } from "../components/Sidebar";
+import Addcart, { CartAction } from "../components/Addcart";
+import Loader from "../components/Loader";
+
+import {
+  productState,
+  incrementProduct,
+  decrementProduct,
+} from "../redux/productSlice";
+
+function ProductDetail() {
+  const { products } = useSelector(productState);
+
+  const { productId } = useParams();
+  const navigate = useNavigate();
+
+  const selectedProduct = products.find(
+    (product) => product.productId === parseInt(productId)
+  );
+
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`);
+  };
+
+  if (!selectedProduct) {
     return (
-        <Base>
+      <Base>
+        <Loader />
+      </Base>
+    );
+  }
+  return (
+    <Base>
+      <main className="dashboard">
+        <Hamburger />
 
-            <main className="dashboard">
+        <div className="product-container">
+          <div className="product-detail card">
+            <div className="flex">
+              <div>
+                <img
+                  src={`../${selectedProduct?.productImage}`}
+                  alt=""
+                  className="cover-img"
+                />
+              </div>
 
-                <Hamburger />
+              <div>
+                <h1>{selectedProduct?.productName}</h1>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Ducimus a iusto praesentium nihil voluptatem quam voluptatibus
+                  tempora quis, cum eveniet?
+                </p>
+                <p>
+                  ⭐⭐⭐⭐⭐{" "}
+                  <span style={{ marginLeft: "10px" }}>
+                    {selectedProduct?.rating} reviews
+                  </span>
+                </p>
 
-                <div className="product-container">
+                <h3>${selectedProduct?.price.toFixed(2)}</h3>
 
-                    <div className="product-detail card">
+                <Addcart product={selectedProduct}>
+                  <CartAction
+                    dataId={selectedProduct?.productId}
+                    dataQuantity={selectedProduct?.quantity}
+                    incAction={incrementProduct}
+                    decAction={decrementProduct}
+                  />
+                </Addcart>
+              </div>
+            </div>
+          </div>
 
-                        <div className="flex">
-                            <div>
-                                <img src="images/shop-fone.PNG" alt="" className="cover-img" />
-                            </div>
+          <div className="products in-detail">
+            {/* Check for products in same category with the selected product  */}
+            <h2>Similar Products</h2>
 
-                            <div>
-                                <h1>Nikey Phone</h1>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus a iusto praesentium
-                                    nihil
-                                    voluptatem quam voluptatibus tempora quis, cum eveniet?</p>
-                                <p>⭐⭐⭐⭐⭐ <span style={{marginLeft: "10px"}}>4.6 reviews</span></p>
-
-                                <h3>$300</h3>
-
-                                <Addcart>
-                                    <CartAction />
-                                </Addcart>
-                            </div>
-                        </div>
-
+            <div className="flex wrap">
+              {products?.map((product) => (
+                <div className="product" key={product.productId}>
+                  <img
+                    src={`../${product?.productImage}`}
+                    alt={product.productName}
+                    onClick={() => handleProductClick(product.productId)}
+                    className="open-prod-detail"
+                  />
+                  <div
+                    className="flex blk-md open-prod-detail"
+                    onClick={() => handleProductClick(product.productId)}
+                  >
+                    <div>
+                      <h3>{product.productName}</h3>
+                      <p>${product.price.toFixed(2)}</p>
                     </div>
 
-
-
-
-                    <div className="products in-detail">
-                        <h2>Similar Products</h2>
-
-                        <div className="flex wrap">
-
-                            <div className="product">
-                                <img src="images/hero-bg.PNG" alt="" />
-                                <div className="flex blk-md">
-                                    <div>
-                                        <h3>Nikey Girl</h3>
-                                        <p>$300</p>
-                                    </div>
-
-                                    <div className="rm-md">
-                                        <p>⭐⭐⭐⭐⭐</p>
-                                        <p>4.6</p>
-                                    </div>
-                                </div>
-
-                             <Addcart>
-                                    <CartAction />
-                                </Addcart>
-
-                            </div>
-                            <div className="product">
-                                <img src="images/hero-bg.PNG" alt="" />
-                                <div className="flex blk-md">
-                                    <div>
-                                        <h3>Nikey Girl</h3>
-                                        <p>$300</p>
-                                    </div>
-
-                                    <div className="rm-md">
-                                        <p>⭐⭐⭐⭐⭐</p>
-                                        <p>4.6</p>
-                                    </div>
-                                </div>
-
-                             <Addcart>
-                                    <CartAction />
-                                </Addcart>
-
-                            </div>
-                            <div className="product">
-                                <img src="images/hero-bg.PNG" alt="" />
-                                <div className="flex blk-md">
-                                    <div>
-                                        <h3>Nikey Girl</h3>
-                                        <p>$300</p>
-                                    </div>
-
-                                    <div className="rm-md">
-                                        <p>⭐⭐⭐⭐⭐</p>
-                                        <p>4.6</p>
-                                    </div>
-                                </div>
-
-                             <Addcart>
-                                    <CartAction />
-                                </Addcart>
-
-                            </div>
-                            <div className="product">
-                                <img src="images/hero-bg.PNG" alt="" />
-                                <div className="flex blk-md">
-                                    <div>
-                                        <h3>Nikey Girl</h3>
-                                        <p>$300</p>
-                                    </div>
-
-                                    <div className="rm-md">
-                                        <p>⭐⭐⭐⭐⭐</p>
-                                        <p>4.6</p>
-                                    </div>
-                                </div>
-
-                             <Addcart>
-                                    <CartAction />
-                                </Addcart>
-
-                            </div>
-                        </div>
+                    <div className="rm-md">
+                      <p>⭐⭐⭐⭐⭐</p>
+                      <p>{product.rating}</p>
                     </div>
+                  </div>
 
-
+                  <Addcart product={product}>
+                    <CartAction
+                      dataId={product.productId}
+                      dataQuantity={product.quantity}
+                      incAction={incrementProduct}
+                      decAction={decrementProduct}
+                    />
+                  </Addcart>
                 </div>
-
-            </main>
-
-
-
-        </Base>
-    )
+              ))}
+            </div>
+          </div>
+        </div>
+      </main>
+    </Base>
+  );
 }
 
-export default productDetail
+export default ProductDetail;

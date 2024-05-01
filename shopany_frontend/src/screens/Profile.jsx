@@ -1,66 +1,152 @@
-import Base from '../components/Base'
-import { Hamburger } from '../components/Sidebar'
-import { useState } from 'react'
+import { useForm } from "react-hook-form";
+import Base from "../components/Base";
+import { Hamburger } from "../components/Sidebar";
+import { useState } from "react";
+
+import * as yup from "yup";
+import { ErrorMessage } from "@hookform/error-message";
+import { yupResolver } from "@hookform/resolvers/yup";
+import errorToast from "../utils/errorToast";
+
+import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 
 function Profile() {
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    confirmPassword: false,
+  });
 
-    const [pswd, setPswd] = useState({
-        password: '',
-        newPassword: ''
-    })
+  const handleShowPassword = () => {
+    setShowPassword((prev) => ({
+      ...prev,
+      password: !prev.password,
+    }));
+  };
 
-    const {password, newPassword} = pswd
+  const handlesShowConfirmPassword = () => {
+    setShowPassword((prev) => ({
+      ...prev,
+      confirmPassword: !prev.confirmPassword,
+    }));
+  };
 
-    const handlePswds = (e) => {
-        setPswd((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }))
-    }
+  const setPasswordSchema = yup.object().shape({
+    newPassword: yup
+      .string()
+      .required("Password is required")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 8 characters long"
+      ),
+    confirmNewPassword: yup
+      .string()
+      .required("Confirm New Password")
+      .oneOf([yup.ref("newPassword"), null], "Password does not match"),
+  });
 
-    return (
-        <Base>
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(setPasswordSchema),
+  });
 
-
-            <main className="dashboard">
-
-          <Hamburger />
-
-                <div className="profile">
-                    <div className="profile-bg">
-                        <img src="images/rrammy.jpg" alt="profile-bg" />
-                        <div>
-                            <input type="file" hidden id="profile-pic" accept="image/*" />
-                            <label for="profile-pic" className="btn">Update Image</label>
-                        </div>
-                    </div>
-                    <div className="profile-details">
-                        <p className="view">Rammy</p>
-                        <p className="view">Rammy</p>
-                    </div>
-                    <div className="profile-details">
-                        <p className="view">rammy@gmail.com</p>
-                        <p className="view">08000000000</p>
-                    </div>
-
-                    <div className="password-section">
-                        <h2>Change Password</h2>
-                        <div>
-                            <input type="password" name="password" value={password} onChange={(e) =>handlePswds(e)} placeholder="New password" />
-                        </div>
-                        <div>
-                            <input type="password" name="newPassword" value={newPassword} onChange={(e) =>handlePswds(e)} placeholder="Confirm new password" />
-                        </div>
-                        <input type="submit" value="Change Password" className="btn" />
-                    </div>
-                </div>
-
-            </main>
+  const submitHandler = (data) => {
+    console.log(data);
+  };
 
 
+  return (
+    <Base>
+      <main className="dashboard">
+        <Hamburger />
 
-        </Base >
-    )
+        <div className="profile">
+          <div className="profile-bg">
+            <img src="images/rrammy.jpg" alt="profile-bg" />
+            <div>
+              <input type="file" hidden id="profile-pic" accept="image/*" />
+              <label for="profile-pic" className="btn">
+                Update Image
+              </label>
+            </div>
+          </div>
+          <div className="profile-details">
+            <p className="view">Rammy</p>
+            <p className="view">Rammy</p>
+          </div>
+          <div className="profile-details">
+            <p className="view">rammy@gmail.com</p>
+            <p className="view">08000000000</p>
+          </div>
+
+          <form
+            className="password-section"
+            onSubmit={handleSubmit(submitHandler)}
+          >
+            <h2>Change Password</h2>
+            <div>
+              <span className="flex pass-eye-container">
+                <input
+                  type={showPassword.password ? "text" : "password"}
+                  name="password"
+                  placeholder="New password"
+                  {...register("newPassword")}
+                  className={errors.newPassword ? "error-input" : ""}
+                />
+
+                <span className="eye-icon" onClick={handleShowPassword}>
+                  {" "}
+                  {showPassword.password ? (
+                    <IoEyeOffOutline size={22} />
+                  ) : (
+                    <IoEyeOutline size={22} />
+                  )}
+                </span>
+              </span>
+
+              <ErrorMessage
+                errors={errors}
+                name="newPassword"
+                render={({ message }) => (
+                  <span className="error-msg">{message}</span>
+                )}
+              />
+            </div>
+            <div>
+              <span className="flex pass-eye-container">
+                <input
+                  type={showPassword.confirmPassword ? "text" : "password"}
+                  name="newPassword"
+                  placeholder="Confirm new password"
+                  {...register("confirmNewPassword")}
+                  className={errors.confirmNewPassword ? "error-input" : ""}
+                />
+
+                <span className="eye-icon" onClick={handlesShowConfirmPassword}>
+                  {showPassword.confirmPassword ? (
+                    <IoEyeOffOutline size={22} />
+                  ) : (
+                    <IoEyeOutline size={22} />
+                  )}
+                </span>
+              </span>
+
+              <ErrorMessage
+                errors={errors}
+                name="confirmNewPassword"
+                render={({ message }) => (
+                  <span className="error-msg">{message}</span>
+                )}
+              />
+            </div>
+            <input type="submit" value="Change Password" className="btn" />
+          </form>
+        </div>
+      </main>
+    </Base>
+  );
 }
 
-export default Profile
+export default Profile;
