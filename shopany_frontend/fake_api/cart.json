@@ -53,6 +53,15 @@
       "quantity": 1,
       "price": 300,
       "amount": 300
+    },
+    {
+      "id": "4978",
+      "cartId": 8,
+      "cartImage": "images/hero-bg.PNG",
+      "cartName": "Nikey Girl8",
+      "quantity": 3,
+      "price": 600,
+      "amount": 1800
     }
   ],
   "products": [
