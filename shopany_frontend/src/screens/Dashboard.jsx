@@ -1,27 +1,65 @@
-import { useSelector } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import Addcart, { CartAction } from "../components/Addcart";
+import { useEffect } from "react";
+
 import Base from "../components/Base";
 import { Hamburger } from "../components/Sidebar";
 import Loader from "../components/Loader";
 
 import {
-  decrementProduct,
-  incrementProduct,
+  getProduct,
+  getSearchProducts,
   productState,
+  setQuery,
+  resetQuery,
 } from "../redux/productSlice";
-import { cartState } from "../redux/cartSlice";
+import { cartState, getCarts } from "../redux/cartSlice";
+import { getProducts } from "../redux/productSlice";
+import { categoryState, getCategories } from "../redux/categorySlice";
+import { getUserState } from "../redux/getUserSlice";
+
+import QueryProduct from "./Components/Dashboard/QueryProduct";
+import ProductCategory from "./Components/Dashboard/ProductCategory";
 
 function Dashboard() {
-  const { products, loading } = useSelector(productState);
+  const { loading, queryProducts, query } = useSelector(productState);
+  const { categories } = useSelector(categoryState);
   const { loading: addCartLoading } = useSelector(cartState);
+  const { userData } = useSelector(getUserState);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`);
+  const handleProductClick = (id) => {
+    dispatch(getProduct(id)).then(() => {
+      navigate(`/product/${id}`);
+    });
   };
+
+  useEffect(() => {
+    if (userData) {
+      dispatch(getProducts());
+      dispatch(getCarts());
+      dispatch(getCategories());
+    }
+  }, [userData, dispatch]);
+
+  const handleSearch = (event) => {
+    const query = event.target.value;
+    dispatch(setQuery(query));
+    if (query?.length > 0) {
+      dispatch(getSearchProducts(query));
+    } else {
+      dispatch(resetQuery());
+    }
+  };
+
+  const handleCancelSearch = () => {
+    dispatch(setQuery(""));
+    dispatch(resetQuery());
+  };
+
+  console.log(queryProducts);
 
   return (
     <Base>
@@ -34,51 +72,54 @@ function Dashboard() {
             <div className="flex search">
               <Hamburger />
 
-              <input type="text" placeholder="Search any" />
+              <input
+                type="text"
+                placeholder="Search any"
+                value={query}
+                onChange={handleSearch}
+              />
+              {query?.length > 0 && (
+                <div className="set-search-cancel">
+                  <p
+                    className="cancel-search"
+                    role="button"
+                    onClick={handleCancelSearch}
+                  >
+                    &times;
+                  </p>
+                </div>
+              )}
+
               <button className="btn" type="submit">
                 Search
               </button>
             </div>
 
-            <h1>Welcome Rammy</h1>
+            <h1>Welcome {userData?.first_name}</h1>
             <div className="products">
-              <h2>Sneakers</h2>
+              {queryProducts.length > 0 && <h2>This what we have for you!</h2>}
 
-              <div className="flex wrap">
-                {products?.map((product) => (
-                  <div className="product" key={product.productId}>
-                    <img
-                      src={product.productImage}
-                      alt={product.productName}
-                      onClick={() => handleProductClick(product.productId)}
-                      className="open-prod-detail"
+              {query?.length > 0 ? (
+                queryProducts.length > 0 ? (
+                  <div className="flex wrap">
+                    <QueryProduct
+                      queryProducts={queryProducts}
+                      handleProductClick={handleProductClick}
                     />
-                    <div
-                      className="flex blk-md open-prod-detail"
-                      onClick={() => handleProductClick(product.productId)}
-                    >
-                      <div>
-                        <h3>{product.productName}</h3>
-                        <p>${product.price.toFixed(2)}</p>
-                      </div>
-
-                      <div className="rm-md">
-                        <p>⭐⭐⭐⭐⭐</p>
-                        <p>{product.rating}</p>
-                      </div>
-                    </div>
-
-                    <Addcart product={product}>
-                      <CartAction
-                        dataId={product.productId}
-                        dataQuantity={product.quantity}
-                        incAction={incrementProduct}
-                        decAction={decrementProduct}
-                      />
-                    </Addcart>
                   </div>
-                ))}
-              </div>
+                ) : (
+                  <div className="empty-product">
+                    <h1>No product matching your search</h1>
+                  </div>
+                )
+              ) : (
+                categories.map((category) => (
+                  <ProductCategory
+                    category={category}
+                    handleProductClick={handleProductClick}
+                  />
+                ))
+              )}
             </div>
           </main>
 

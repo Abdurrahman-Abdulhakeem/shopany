@@ -1,29 +1,46 @@
 import { CartAction } from "../components/Addcart";
 import Base from "../components/Base";
 import { Hamburger } from "../components/Sidebar";
-import { Link } from "react-router-dom";
-import { AiTwotoneDelete } from "react-icons/ai";
-import {
-  cartState,
-  deleteCartItem,
-  getCarts,
-  openModal,
-  emptyCart,
-  incrementCartItem,
-  decrementCartItem
-} from "../redux/cartSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
 import Modal from "../components/Modal";
 import Loader from "../components/Loader";
+
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { AiTwotoneDelete } from "react-icons/ai";
+
+import {
+  cartState,
+  getCarts,
+  openModal,
+  updateCart,
+  deleteCart,
+  totalCartPrice,
+  deleteCarts,
+} from "../redux/cartSlice";
+
+import { BASEURL } from "../utils/useAxios";
 
 function Cart() {
   const dispatch = useDispatch();
   const { carts, totalPrice, isModalOpen, loading } = useSelector(cartState);
 
+  // /////if carts.length > 0 to dispatch totalPrice
+
+  useEffect(() => {
+    if (carts.length > 0) {
+      dispatch(totalCartPrice());
+    }
+  }, [carts, dispatch]);
+
   useEffect(() => {
     dispatch(getCarts());
   }, [dispatch]);
+
+  const handleDeleteCart = async (deleteCart) => {
+    await dispatch(deleteCart);
+    dispatch(totalCartPrice());
+  };
 
   return (
     <Base>
@@ -47,13 +64,13 @@ function Cart() {
                 <Loader />
               ) : (
                 carts?.map((cart) => (
-                  <tbody key={cart.cartId} className="tbody">
+                  <tbody key={cart.id} className="tbody">
                     <td>
-                      <img src={cart.cartImage} alt={cart.cartName} />
+                      <img src={BASEURL + cart.image} alt={cart.name} />
                     </td>
 
                     <td>
-                      {cart.cartName}{" "}
+                      {cart.name}{" "}
                       <span style={{ marginLeft: "6px" }}>
                         {" "}
                         X{cart.quantity}
@@ -61,10 +78,10 @@ function Cart() {
                     </td>
                     <td>
                       <CartAction
-                        dataId={cart.cartId}
+                        dataId={cart.id}
                         dataQuantity={cart.quantity}
-                        incAction = {incrementCartItem}
-                        decAction = {decrementCartItem}
+                        incAction={updateCart}
+                        decAction={updateCart}
                       />
                     </td>
                     <td
@@ -73,12 +90,12 @@ function Cart() {
                       <span
                         role="button"
                         style={{ cursor: "pointer" }}
-                        onClick={() => dispatch(deleteCartItem(cart.cartId))}
+                        onClick={() => handleDeleteCart(deleteCart(cart.id))}
                       >
                         <AiTwotoneDelete />
                       </span>
                     </td>
-                    <td>${cart.amount.toFixed(2)}</td>
+                    <td>${cart.price * cart.quantity}</td>
                   </tbody>
                 ))
               )}
@@ -94,17 +111,12 @@ function Cart() {
             <span>
               <p className="view">
                 Sub total{" "}
-                <span style={{ marginLeft: "15px" }}>
-                  ${totalPrice.toFixed(2)}
-                </span>
+                <span style={{ marginLeft: "15px" }}>${totalPrice}</span>
               </p>
             </span>
             <span>
               <p className="view">
-                Total{" "}
-                <span style={{ marginLeft: "15px" }}>
-                  ${totalPrice.toFixed(2)}
-                </span>
+                Total <span style={{ marginLeft: "15px" }}>${totalPrice}</span>
               </p>
             </span>
 
@@ -121,11 +133,10 @@ function Cart() {
             )}
 
             {isModalOpen && (
-              <Modal text ="Are you sure you want to clear the cart?">
-                  <button className="btn" onClick={() => dispatch(emptyCart())}>
-                    Yes
-                  </button>
-          
+              <Modal text="Are you sure you want to clear the cart?">
+                <button className="btn" onClick={() => dispatch(deleteCarts())}>
+                  Yes
+                </button>
               </Modal>
             )}
           </div>

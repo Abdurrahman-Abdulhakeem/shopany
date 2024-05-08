@@ -60,13 +60,20 @@ class UserSerializer(serializers.ModelSerializer):
         
         return obj
     
+
+class CategorySerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Category
+        fields = ('id', 'name',)
     
     
 class ProductSerializer(serializers.ModelSerializer):
-    
+    categories = CategorySerializer(source='category', many=True, read_only=True)    
     class Meta:
         model = Product
-        fields = ("category",
+        fields = (  "id",
+                    "categories",
                     "name",
                     "image",
                     "description",
@@ -82,6 +89,8 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = (
+                    "id",
+                    "product",
                     "name",
                     "image",
                     "description",
@@ -92,24 +101,25 @@ class CartSerializer(serializers.ModelSerializer):
         
     def get_product_amount(self, obj):
         return obj.total_price()
+    
         
     def create(self, data):
         
-        image_file = self.context["request"].FILES["image"]
-        if image_file:
-            data["image"] = image_file
+        # image_file = self.context["request"].FILES["image"]
+        # if image_file:
+        #     data["image"] = image_file
             
         return Cart.objects.create(**data)
     
-    def validate(self, obj):
+    # def validate(self, obj):
         
-        validator = FileExtensionValidator(allowed_extensions=['jpg', 'png', 'jpeg'])
+    #     validator = FileExtensionValidator(allowed_extensions=['jpg', 'png', 'jpeg'])
         
-        # image_file = request.FILES["image"]
+    #     # image_file = request.FILES["image"]
         
 
-        if not validator(obj("image")):
-             raise serializers.ValidationError({"message": "File must be an Image"})
+    #     if not validator(obj("image")):
+    #          raise serializers.ValidationError({"message": "File must be an Image"})
         
-        return obj
+    #     return obj
         

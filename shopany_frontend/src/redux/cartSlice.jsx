@@ -3,67 +3,153 @@ import axiosInstance from "../utils/useAxios";
 import successToast from "../utils/successToast";
 import errorToast from "../utils/errorToast";
 
-let cachedData;
-let lastTimeFetch;
+// let cachedData;
+// let lastTimeFetch;
 
-let currentTime = new Date().getTime();
+// let currentTime = new Date().getTime();
 
 export const getCarts = createAsyncThunk(
-  "cart/getCartItems",
+  "cart/getCarts",
   async (_, thunkAPI) => {
     // if(cachedData && currentTime - lastTimeFetch < 6000) {
     //   return cachedData;
     // }
 
-    function delay(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
+    // function delay(ms) {
+    //   return new Promise((resolve) => setTimeout(resolve, ms));
+    // }
 
     try {
-      await delay(1000);
+      // await delay(1000);
 
-      const { data } = await axiosInstance.get(`carts/`);
+      const { data } = await axiosInstance.get(`api/v1/carts/`);
+      console.log(data);
 
-      cachedData = data;
-      lastTimeFetch = currentTime;
-    
+      // cachedData = data;
+      // lastTimeFetch = currentTime;
+
       return data;
     } catch (error) {
       console.log(error);
-      errorToast(`Oops! ${error.message}`);
+      errorToast(`Oops! ${error.response.data.message}`);
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
 
 export const addProductToCart = createAsyncThunk(
-  "products/addProductToCart",
-  async (obj, thunkAPI) => {
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-
+  "product/addProductToCart",
+  async (product, thunkAPI) => {
     try {
-      await delay(500)
-      const { data } = await axiosInstance.post(`carts/`, obj);
-      successToast(`${obj.cartName} has been added to your cart!`)
+      const { data } = await axiosInstance.post(`api/v1/addcart/`, {
+        product_id: product.id,
+        quantity: product.quantity,
+      });
+      successToast(`${data.message}`);
+
       return data;
     } catch (error) {
-      if (error.message) return thunkAPI.rejectWithValue(error.message);
+      let errorMsg = "";
+
+      if (error.response && error.response.data.error) {
+        errorMsg = error.response.data.error[0];
+      } else if (error.response && error.response.data.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.response && error.response.data.detail) {
+        errorMsg = error.response.data.detail;
+      } else {
+        errorMsg = error.message;
+      }
+      errorToast(errorMsg);
+      return thunkAPI.rejectWithValue(errorMsg);
     }
   }
 );
 
-// export const deleteCart = createAsyncThunk("delete/cart", async (id, thunkAPI) => {
+export const updateCart = createAsyncThunk(
+  "cart/updateCart",
+  async ({ dataId, update_item }, thunkAPI) => {
+    try {
+      const { data } = await axiosInstance.put(`api/v1/cart/${dataId}/`, {
+        update_item,
+      });
+      return data;
+    } catch (error) {
+      let errorMsg = "";
 
-//   try {
+      if (error.response && error.response.data.error) {
+        errorMsg = error.response.data.error[0];
+      } else if (error.response && error.response.data.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.response && error.response.data.detail) {
+        errorMsg = error.response.data.detail;
+      } else {
+        errorMsg = error.message;
+      }
+      return thunkAPI.rejectWithValue(errorMsg);
+    }
+  }
+);
 
-//     const {data} = axiosInstance.delete(`carts/${id}`);
-//     return data
+export const deleteCart = createAsyncThunk(
+  "cart/deleteCart",
+  async (id, thunkAPI) => {
+    try {
+      const { data } = await axiosInstance.delete(`api/v1/cart/${id}/`);
+      errorToast(data.message);
+      return data;
+    } catch (error) {
+      let errorMsg = "";
 
-//   }catch (error) {
-//     return thunkAPI.rejectWithValue(error.message);
-//   }
-// })
+      if (error.response && error.response.data.error) {
+        errorMsg = error.response.data.error[0];
+      } else if (error.response && error.response.data.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.response && error.response.data.detail) {
+        errorMsg = error.response.data.detail;
+      } else {
+        errorMsg = error.message;
+      }
+      return thunkAPI.rejectWithValue(errorMsg);
+    }
+  }
+);
 
+export const deleteCarts = createAsyncThunk(
+  "cart/deleteCarts",
+  async (_, thunkAPI) => {
+    try {
+      const { data } = await axiosInstance.delete("api/v1/carts/delete/");
+      errorToast(data.message);
+      return data;
+    } catch (error) {
+      let errorMsg = "";
+
+      if (error.response && error.response.data.error) {
+        errorMsg = error.response.data.error[0];
+      } else if (error.response && error.response.data.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.response && error.response.data.detail) {
+        errorMsg = error.response.data.detail;
+      } else {
+        errorMsg = error.message;
+      }
+      return thunkAPI.rejectWithValue(errorMsg);
+    }
+  }
+);
+
+export const totalCartPrice = createAsyncThunk(
+  "cart/totalCartPrice",
+  async (_, thunkAPI) => {
+    try {
+      const { data } = await axiosInstance.get("api/v1/carts/totalprice/");
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
 
 const cartSlice = createSlice({
   name: "cart",
@@ -72,60 +158,9 @@ const cartSlice = createSlice({
     totalPrice: 0,
     loading: false,
     isModalOpen: false,
-    error: false
+    error: false,
   },
   reducers: {
-    incrementCartItem: (state, action) => {
-      const cart = state.carts.find((cart) => cart.cartId === action.payload);
-
-      cart.quantity += 1;
-      cart.amount = cart.quantity * cart.price;
-      state.totalPrice = state.carts.reduce(
-        (sum, cart) => sum + cart.amount,
-        0
-      );
-    },
-
-    decrementCartItem: (state, action) => {
-      const cart = state.carts.find((cart) => cart.cartId === action.payload);
-      if (cart.quantity > 1) {
-        cart.quantity -= 1;
-        cart.amount = cart.quantity * cart.price;
-
-        state.totalPrice = state.carts.reduce(
-          (sum, cart) => sum + cart.amount,
-          0
-        );
-      } else {
-        state.carts = state.carts.filter(
-          (cart) => cart.cartId !== action.payload
-        );
-        state.totalPrice = state.carts.reduce(
-          (sum, cart) => sum + cart.amount,
-          0
-        );
-      }
-    },
-
-    deleteCartItem: (state, action) => {
-      state.carts = state.carts.filter(
-        (cart) => cart.cartId !== action.payload
-      );
-      state.totalPrice = state.carts.reduce(
-        (sum, cart) => sum + cart.amount,
-        0
-      );
-      errorToast(`Product removed, cart has been updated!`)
-    },
-
-    emptyCart: (state) => {
-      state.carts = [];
-      state.totalPrice = 0;
-      state.loading = false;
-      state.isModalOpen = false;
-      errorToast("No Items in Cart");
-    },
-
     openModal: (state) => {
       state.isModalOpen = true;
     },
@@ -138,10 +173,10 @@ const cartSlice = createSlice({
       .addCase(getCarts.fulfilled, (state, action) => {
         state.carts = action.payload;
         state.loading = false;
-        state.totalPrice = state.carts.reduce(
-          (sum, cart) => sum + cart.amount,
-          0
-        );
+        // state.totalPrice = state.carts.reduce(
+        //   (sum, cart) => sum + cart.amount,
+        //   0
+        // );
       })
       .addCase(getCarts.pending, (state, action) => {
         state.loading = true;
@@ -149,26 +184,69 @@ const cartSlice = createSlice({
       .addCase(getCarts.rejected, (state, action) => {
         state.loading = false;
       })
-      .addCase(addProductToCart.fulfilled, (state, action) => {     
-          state.carts.unshift(action.payload);
-          state.loading = false;
+      .addCase(addProductToCart.fulfilled, (state, action) => {
+        state.carts.unshift(action.payload);
+        state.loading = false;
       })
       .addCase(addProductToCart.pending, (state) => {
         state.loading = true;
-        })
+      })
       .addCase(addProductToCart.rejected, (state) => {
         state.loading = false;
+      })
+
+      .addCase(updateCart.fulfilled, (state, action) => {
+        // state.loading = false
+        const cartIndex = state.carts.findIndex(
+          (cart) => cart.id === action.payload.data?.id
+        );
+
+        if (cartIndex !== -1) {
+          if (action.payload.method === "plus") {
+            state.carts[cartIndex].quantity += 1;
+          }
+          if (action.payload.method === "minus") {
+            state.carts[cartIndex].quantity -= 1;
+          }
+        } else {
+          state.carts = state.carts.filter(
+            (cart) => cart.id !== action.payload.id
+          );
+        }
+      })
+      .addCase(updateCart.pending, (state, action) => {
+        // state.loading = true;
+      })
+      .addCase(updateCart.rejected, (state) => {
+        // state.loading = false;
+      })
+      .addCase(deleteCart.fulfilled, (state, action) => {
+        state.carts = state.carts.filter(
+          (cart) => cart.id !== action.payload.id
+        );
+      })
+
+      .addCase(totalCartPrice.fulfilled, (state, { payload }) => {
+        const { total_price: totalPrice } = payload;
+        state.totalPrice = totalPrice;
+      })
+      .addCase(deleteCarts.fulfilled, (state, action) => {
+        state.carts = [];
+        state.totalPrice = 0;
+        state.loading = false;
+        state.isModalOpen = false;
+      })
+      .addCase(deleteCarts.pending, (state, action) => {
+        state.loading = true;
+        state.isModalOpen = false;
+      })
+      .addCase(deleteCarts.rejected, (state, action) => {
+        state.loading = false;
+        state.isModalOpen = false;
       });
   },
 });
 
 export const cartState = (state) => state.cart;
-export const {
-  incrementCartItem,
-  decrementCartItem,
-  deleteCartItem,
-  emptyCart,
-  openModal,
-  closeModal,
-} = cartSlice.actions;
+export const { openModal, closeModal } = cartSlice.actions;
 export default cartSlice.reducer;

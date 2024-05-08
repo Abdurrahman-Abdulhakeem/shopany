@@ -8,8 +8,10 @@ import { IoCartOutline, IoCodeSlashSharp } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 import { TbLogout } from "react-icons/tb";
 import { MdOutlineCategory, MdOutlineBookmarkBorder } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { cartState } from "../redux/cartSlice";
+import { logoutAction } from "../redux/userLoginSlice";
+import { getProductByCategory } from "../redux/productSlice";
 
 function Sidebar() {
   const { toggleBar, dispatch } = useHam();
@@ -29,6 +31,8 @@ function Sidebar() {
   const splitPathname = pathname.split("/");
 
   const sideModal = useRef();
+
+  const newDispatch = useDispatch()
 
   useEffect(() => {
     const handleClickOutsideModal = (event) => {
@@ -90,13 +94,13 @@ function Sidebar() {
           </Link>
           <ul className="inner-category">
             <li>
-              <Link to="">Sneakers</Link>
+              <Link to="/categories/sneakers" onClick={() => newDispatch(getProductByCategory("Sneakers"))}>Sneakers</Link>
             </li>
             <li>
-              <Link to="">Food stuff</Link>
+              <Link to="/categories/foodstuffs" onClick={() => newDispatch(getProductByCategory("Foodstuffs"))}>Food stuff</Link>
             </li>
             <li>
-              <Link to="">Groceries</Link>
+              <Link to="/categories/groceries"onClick={() => newDispatch(getProductByCategory("Groceries"))}>Groceries</Link>
             </li>
           </ul>
         </li>
@@ -150,12 +154,12 @@ function Sidebar() {
         </li>
 
         <li>
-          <Link to="" className="flex-icon">
+          <p style={{fontSize: "16px", cursor: "pointer"}} className="flex-icon" onClick={() => logoutAction()}>
             <span className="icon">
               <TbLogout />
             </span>{" "}
             <span>Logout</span>
-          </Link>
+          </p>
         </li>
       </nav>
     </aside>

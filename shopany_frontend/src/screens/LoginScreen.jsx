@@ -1,12 +1,20 @@
 import { ErrorMessage } from "@hookform/error-message";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { login, userLoginState } from "../redux/userLoginSlice";
+import MiniSpinner from "../components/MiniSpinner";
 
 function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
+  const { loading, user } = useSelector(userLoginState);
+
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -19,7 +27,14 @@ function LoginScreen() {
 
   const onSubmit = (data) => {
     console.log(data);
+    dispatch(login(data));
   };
+
+  useEffect(() => {
+    if (user?.access) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate, dispatch]);
 
   return (
     <div class="register-container">
@@ -30,13 +45,13 @@ function LoginScreen() {
             type="email"
             name="email"
             placeholder="Email address"
-            {...register("Email", { required: "Email is required!" })}
-            className={errors.Email ? "error-input" : ""}
+            {...register("email", { required: "Email is required!" })}
+            className={errors.email ? "error-input" : ""}
           />
 
           <ErrorMessage
             errors={errors}
-            name="Email"
+            name="email"
             render={({ message }) => (
               <span className="error-msg">{message}</span>
             )}
@@ -48,8 +63,8 @@ function LoginScreen() {
               type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password"
-              {...register("Password", { required: "Password is required" })}
-              className={errors.Password ? "error-input" : ""}
+              {...register("password", { required: "Password is required" })}
+              className={errors.password ? "error-input" : ""}
             />
 
             <span className="eye-icon" onClick={handleShowPassword}>
@@ -64,14 +79,16 @@ function LoginScreen() {
 
           <ErrorMessage
             errors={errors}
-            name="Password"
+            name="password"
             render={({ message }) => (
               <span className="error-msg">{message}</span>
             )}
           />
         </div>
 
-        <input type="submit" value="Login" class="btn" />
+        <button type="submit" class="btn full" disabled={loading}>
+          {loading ? <MiniSpinner /> : "Login"}
+        </button>
 
         <p>
           Don't have an account yet?{" "}
@@ -84,7 +101,10 @@ function LoginScreen() {
         </p>
       </form>
 
-      <p style={{ fontSize: "1.3em", color: "#fff" }}> &copy; Shopany {new Date().getFullYear()}</p>
+      <p style={{ fontSize: "1.3em", color: "#fff" }}>
+        {" "}
+        &copy; Shopany {new Date().getFullYear()}
+      </p>
     </div>
   );
 }

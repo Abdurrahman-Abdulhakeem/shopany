@@ -5,19 +5,22 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import serializers
-from rest_framework.parsers import MultiPartParser
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from django.contrib.auth.hashers import check_password
 from django.core.validators import FileExtensionValidator
+from django.db.models import Q
 
 from .models import *
 from .serializers import *
+from .permissions import *
 
 import random
 
 # Create your views here.
 
 class LoginView(APIView):
+    permission_classes = (AllowAny,)
     
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
@@ -73,6 +76,7 @@ class LoginView(APIView):
 
 
 class RegisterUserView(APIView):
+    permission_classes = (AllowAny,)
     
     def post(self, request, *args, **kwargs):
         
@@ -110,18 +114,53 @@ class RegisterUserView(APIView):
         
         return Response({'message': "Incomplete registration"}, status=400)
 
+class UserDetailView(APIView):
+    permission_classes = (IsAuthenticated, )
+    def get(self, request, *args, **kwargs):
+        
+        user = request.user
+        
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=200)
+    
+
+class CategoryView(APIView):
+    
+    def get(self, request, *args, **kwargs):
+        queryset = Category.objects.all()
+        serializer = CategorySerializer(queryset, many=True)
+        return Response(serializer.data, status=200)
+
 class ProductView(APIView):
+    permission_classes = (IsAuthenticated,)
     
     
     def get(self, request, *args, **kwargs):
+        
+        query = request.GET.get('query', None)
+        category = request.query_params.get('category', None)
+        
+        if query is not None:
+                queryset = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
+                serializeProduct = ProductSerializer(queryset, many=True)
+                return Response(serializeProduct.data)
+
+        
+        if category is not None:
+            queryset = Product.objects.filter(category__name__icontains=category)
+            serializeProduct = ProductSerializer(queryset, many=True)
+            return Response({"data": serializeProduct.data, "category": category} )
         
         queryset = Product.objects.all()
         
         serializeProduct = ProductSerializer(queryset, many=True)
         return Response(serializeProduct.data)
-        
+    
+
+    
 
 class ProductDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
     
     def get(self, request, id, *args, **kwargs):
         
@@ -145,97 +184,118 @@ class ProductDetailView(APIView):
  
         product.save()
         serializer = ProductSerializer(product, partial=True)
-        return Response({"data": serializer.data}, status=201)
+        return Response({"data": serializer.data, "method": request.data.get("update_item")}, status=201)
             
     
 
             
 
 class AddProductToCart(APIView):
+    permission_classes = (IsAuthenticated, )
     
     def post(self, request, *args, **kwargs):
-        parser_classes = [MultiPartParser]
-        validator = FileExtensionValidator(allowed_extensions=['jpg', 'png', 'jpeg'])
+     
+        # validator = FileExtensionValidator(allowed_extensions=['jpg', 'png', 'jpeg'])
         
         # image_file = request.FILES["image"]
-        user = User.objects.get(id=1)
+        product_id = request.data.get("product_id")
+        product = Product.objects.get(id=product_id)
+        if Cart.objects.filter(user=request.user).filter(product=product).exists():
+            return Response({"message": "Product already in your cart", "product_id": product_id}, status=400)
+            
+  
+        data = {
+            "product": product_id,
+             "name": product.name,
+             "image": product.image,
+             "description": product.description,
+             "quantity": request.data.get("quantity"),
+             "price": product.price,
+             "rating": product.rating
+        }
         
-        if not request.data.get('name'):
-            return Response({'message':"Product name is required"})
-        
-        serializer = CartSerializer(data=request.data ,context={"request": request})
+        serializer = CartSerializer(data=data ,context={"request": request})
         if serializer.is_valid(raise_exception=True):
           
-            serializer.save(user=user)
-            return Response({'message':"Product added successfully to cart", "data":serializer.data}, status=201)
+            serializer.save(user=request.user)
+            return Response({'message':"Product added successfully to cart", "data":serializer.data, "product_id": product_id}, status=201)
         return Response({'message':"Failed to add product to cart"}, status=400)
     
     # {
+    #     "product": 1,
     #     "name": "product_add",
-    #     "price": 99.99,
-    #     "image": ""
+    #     "price": 99.99
     # }
     
 class CartView(APIView):
+    permission_classes = (IsAuthenticated, IsOwner)
     
     def get(self, request, *args, **kwargs):
         
-        queryset = Cart.objects.all()
+        queryset = request.user.cart_set.all()
         
         serializer = CartSerializer(queryset, many=True)
         
         return Response(serializer.data, status=200)
 
 class CartDetailView(APIView):
-    
+    permission_classes = (IsAuthenticated, IsOwner)
     def put(self, request, id, *args, **kwargs):
         
-        cart = Cart.objects.get(id=id)
+        try :
+            cart = Cart.objects.get(id=id)
+            
+            if request.data.get("update_item") == "plus":
+                cart.quantity +=1
+            if request.data.get("update_item") == "minus":
+                if cart.quantity  > 1:
+                    cart.quantity -=1
+                    
+                else:
+                    cart.delete()
+                    return Response({"message": "Product removed from cart", "id": id}, status=200)
+            
+            cart.save()
+            serializer = CartSerializer(cart, partial=True)
+            return Response({"message": "Cart updated!", "method":request.data.get("update_item"), "id": id, "data": serializer.data}, status=200)
         
-        if request.data.get("update_item") == "plus":
-            cart.quantity +=1
-        if request.data.get("update_item") == "minus":
-            if cart.quantity  > 1:
-                cart.quantity -=1
-                
-            else:
-                cart.delete()
-                return Response({"message": "Product removed from cart"}, status=204)
+        except Cart.DoesNotExist:
+            return Response({"message": "No cart exists!"}, status=404)
         
-        cart.save()
-        serializer = CartSerializer(cart, partial=True)
-        return Response({"message": "Cart updated!", "data": serializer.data}, status=201)
-    
     def delete(self, request, id, *args, **kwargs):
         
-        cart = Cart.objects.get(id=id)
-        cart.delete()
-        return Response({"message": "Product deleted from cart"}, status=204)
-    
+        try :
+            cart = Cart.objects.get(id=id)
+            cart.delete()
+            return Response({"message": "Product deleted from cart", "id": id}, status=200)
+        except Cart.DoesNotExist:
+            return Response({"message": "No cart exists!"}, status=404)
     # {
-    #     "update_item": "plus"
+    #     "update_item": "minus"
     # }
     
 class TotalCartPrice(APIView):
+    permission_classes = (IsAuthenticated, )
     
     def get(self, request, *args, **kwargs):
         try:
-            qs = Cart.objects.all()
+            qs = Cart.objects.filter(user=request.user)
 
             total_price = sum(item.price * item.quantity for item in qs)
             
             return Response({"total_price": total_price}, status=200)
         
         except Cart.DoesNotExist:
-            return Response({"message": "No cart related"})
+            return Response({"message": "No cart related"}, status=404)
         
 class DeleteCart(APIView):
+    permission_classes = (IsAuthenticated, IsOwner)
     
     def delete(self, request, *args, **kwargs):
         
         try:
-            qs = Cart.objects.all()
+            qs = request.user.cart_set.all()
             qs.delete()
-            return Response({"message": "No product in cart"}, status=204)
+            return Response({"message": "No product in cart"}, status=200)
         except Cart.DoesNotExist:
-            return Response({"message": "No cart related"})
+            return Response({"message": "No cart related"}, status=404)

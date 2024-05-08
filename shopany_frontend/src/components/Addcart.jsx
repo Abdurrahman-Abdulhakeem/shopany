@@ -1,64 +1,59 @@
 import { useDispatch, useSelector } from "react-redux";
-import { addProductToCart, cartState, deleteCartItem } from "../redux/cartSlice";
-import MiniSpinner from "./MiniSpinner";
+import {
+  addProductToCart,
+  cartState,
+  deleteCart,
+  totalCartPrice,
+} from "../redux/cartSlice";
 
 function Addcart({ children, product }) {
   const dispatch = useDispatch();
-  const {carts} = useSelector(cartState)
+  const { carts } = useSelector(cartState);
 
-  const cart = carts.some(cart => cart.cartId === product.productId)
+  const cart = carts.some((cart) => cart.product === product.id);
 
-  const handleAddProduct = (product) => {
-    const data = {
-      cartId: product.productId,
-      cartImage: product.productImage,
-      cartName: product.productName,
-      quantity: product.quantity,
-      price: product.price,
-      amount: product.price * product.quantity
-    }
-
-    !cart && dispatch(addProductToCart(data))
-   
-  }
-
- 
-
+  const cartId = carts.find((cart) => cart.product === product.id);
 
   return (
     <div className="flex blk-md">
       {children}
 
-      {cart && <button className="btn" onClick={() => dispatch(deleteCartItem(product.productId))}>
-        {"Remove from cart"}
-        
-      </button>}
+      {cart ? (
+        <button className="btn" onClick={() => dispatch(deleteCart(cartId.id))}>
+          {"Remove from cart"}
+        </button>
+      ) : (
+        <button
+          className="btn"
+          onClick={() => dispatch(addProductToCart(product))}
+        >
+          {"Add to cart"}
+        </button>
+      )}
 
-      {!cart && <button className="btn" onClick={() => handleAddProduct(product)}>
-        { "Add to cart"}
-        
-      </button>}
     </div>
   );
 }
 
 export function CartAction({ dataId, dataQuantity, incAction, decAction }) {
   const dispatch = useDispatch();
+
+  const handleInc = () => {
+    dispatch(incAction({ dataId, update_item: "plus" }));
+  };
+
+  const handleDec = async () => {
+    await dispatch(decAction({ dataId, update_item: "minus" }));
+    dispatch(totalCartPrice());
+  };
+
   return (
     <div className="inc">
-      <span
-        role="button"
-        className="plus"
-        onClick={() => dispatch(incAction(dataId))}
-      >
+      <span role="button" className="plus" onClick={handleInc}>
         +
       </span>
       <span className="quantity">{dataQuantity}</span>
-      <span
-        role="button"
-        className="minus"
-        onClick={() => dispatch(decAction(dataId))}
-      >
+      <span role="button" className="minus" onClick={handleDec}>
         &minus;
       </span>
     </div>

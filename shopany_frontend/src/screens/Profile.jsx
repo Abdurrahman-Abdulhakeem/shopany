@@ -1,20 +1,23 @@
-import { useForm } from "react-hook-form";
-import Base from "../components/Base";
-import { Hamburger } from "../components/Sidebar";
 import { useState } from "react";
-
-import * as yup from "yup";
+import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
-import errorToast from "../utils/errorToast";
 
-import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import Base from "../components/Base";
+import { Hamburger } from "../components/Sidebar";
+
+import * as yup from "yup";
+import { useSelector } from "react-redux";
+import { getUserState } from "../redux/getUserSlice";
 
 function Profile() {
   const [showPassword, setShowPassword] = useState({
     password: false,
     confirmPassword: false,
   });
+
+  const {userData} = useSelector(getUserState)
 
   const handleShowPassword = () => {
     setShowPassword((prev) => ({
@@ -56,7 +59,6 @@ function Profile() {
     console.log(data);
   };
 
-
   return (
     <Base>
       <main className="dashboard">
@@ -73,12 +75,12 @@ function Profile() {
             </div>
           </div>
           <div className="profile-details">
-            <p className="view">Rammy</p>
-            <p className="view">Rammy</p>
+            <p className="view">{userData?.first_name}</p>
+            <p className="view">{userData?.last_name}</p>
           </div>
           <div className="profile-details">
-            <p className="view">rammy@gmail.com</p>
-            <p className="view">08000000000</p>
+            <p className="view">{userData?.email}</p>
+            <p className="view">{userData?.phone_number}</p>
           </div>
 
           <form

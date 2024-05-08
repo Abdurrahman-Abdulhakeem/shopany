@@ -2,7 +2,7 @@ import React from 'react'
 
 function MiniSpinner() {
   return (
-    <span className="mini-spinner"></span> 
+    <p className="mini-spinner"></p> 
   )
 }
 

@@ -7,6 +7,7 @@ const location = useLocation()
 
 
 
+
     return (
         <div className={`grid ${location.pathname !== '/dashboard' ? 'two' : ""}`}>
 

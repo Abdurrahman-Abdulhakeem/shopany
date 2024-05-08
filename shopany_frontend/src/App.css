@@ -102,11 +102,10 @@ body {
   border: 4px dotted #fff;
   border-radius: 50%;
   animation: mini-spinner-anim 0.8s linear infinite;
-  margin: 4px 15px;
-}
-
-label .mini-spinner {
-  margin: -4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: -7px !important;
 }
 
 @keyframes mini-spinner-anim {
@@ -144,9 +143,9 @@ label .mini-spinner {
 ::-webkit-scrollbar-thumb {
     border-radius: 0.5rem;
 } */
-.open-prod-detail:hover {
+/* .open-prod-detail:hover {
 
-}
+} */
 img {
   height: 150px;
 }
@@ -335,6 +334,10 @@ input::placeholder {
   grid-column: 2;
 }
 
+.category {
+  margin-right: 30px;
+}
+
 .dashboard .search {
   width: 100%;
   gap: 10px;
@@ -348,6 +351,19 @@ input::placeholder {
   font-size: 1.2em;
   border-radius: 7px;
   outline-color: var(--prm-color);
+}
+
+.set-search-cancel {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.cancel-search {
+  position: absolute;
+  font-size: 25px;
+  font-weight: lighter;
+  right: 20px;
+  cursor: pointer;
 }
 
 .dashboard .products h2 {
@@ -366,6 +382,7 @@ input::placeholder {
 
 .dashboard .products .flex.wrap {
   flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 .dashboard .products .flex .product {
@@ -389,6 +406,10 @@ input::placeholder {
 .dashboard .products .flex .product img {
   width: 230px;
   border-radius: 10px 10px 0px 0px;
+}
+
+.empty-product {
+  margin: 30px 0px;
 }
 
 .inc {
@@ -423,6 +444,12 @@ input::placeholder {
   color: #fff;
   border-radius: 7px;
   cursor: pointer;
+
+}
+
+.full.btn {
+  width: 100%;
+  padding: 15px;
 }
 
 .dashboard .products .flex .product .btn {

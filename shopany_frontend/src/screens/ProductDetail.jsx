@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 import Base from "../components/Base";
 import { Hamburger } from "../components/Sidebar";
@@ -10,23 +11,46 @@ import {
   productState,
   incrementProduct,
   decrementProduct,
+  getProduct,
+  incrementSimilarProduct,
+  decrementSimilarProduct,
 } from "../redux/productSlice";
 
+import { BASEURL } from "../utils/useAxios";
+import errorToast from "../utils/errorToast";
+
 function ProductDetail() {
-  const { products } = useSelector(productState);
+  const { currentProduct, similarProducts, error } = useSelector(productState);
 
   const { productId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const selectedProduct = products.find(
-    (product) => product.productId === parseInt(productId)
-  );
+  // console.log(similarProducts);
 
-  const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`);
+  // const selectedProduct = products.find(
+  //   (product) => product.id === parseInt(productId)
+  // );
+
+  const handleProductClick = (id) => {
+    dispatch(getProduct(id)).then(() => {
+      navigate(`/product/${id}`);
+    });
   };
 
-  if (!selectedProduct) {
+  useEffect(() => {
+    dispatch(getProduct(productId));
+  }, [productId, dispatch, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      errorToast(error)
+
+        navigate(-1);
+    }
+  }, [error, navigate]);
+
+  if (!currentProduct) {
     return (
       <Base>
         <Loader />
@@ -43,32 +67,28 @@ function ProductDetail() {
             <div className="flex">
               <div>
                 <img
-                  src={`../${selectedProduct?.productImage}`}
+                  src={`${BASEURL + currentProduct?.image}`}
                   alt=""
                   className="cover-img"
                 />
               </div>
 
               <div>
-                <h1>{selectedProduct?.productName}</h1>
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Ducimus a iusto praesentium nihil voluptatem quam voluptatibus
-                  tempora quis, cum eveniet?
-                </p>
+                <h1>{currentProduct?.name}</h1>
+                <p>{currentProduct?.description}</p>
                 <p>
                   ⭐⭐⭐⭐⭐{" "}
                   <span style={{ marginLeft: "10px" }}>
-                    {selectedProduct?.rating} reviews
+                    {currentProduct?.rating} reviews
                   </span>
                 </p>
 
-                <h3>${selectedProduct?.price.toFixed(2)}</h3>
+                <h3>${currentProduct?.price}</h3>
 
-                <Addcart product={selectedProduct}>
+                <Addcart product={currentProduct}>
                   <CartAction
-                    dataId={selectedProduct?.productId}
-                    dataQuantity={selectedProduct?.quantity}
+                    dataId={currentProduct.id}
+                    dataQuantity={currentProduct.quantity}
                     incAction={incrementProduct}
                     decAction={decrementProduct}
                   />
@@ -79,43 +99,47 @@ function ProductDetail() {
 
           <div className="products in-detail">
             {/* Check for products in same category with the selected product  */}
-            <h2>Similar Products</h2>
+            {similarProducts?.length > 0 && (
+              <>
+                <h2>Similar Products</h2>
 
-            <div className="flex wrap">
-              {products?.map((product) => (
-                <div className="product" key={product.productId}>
-                  <img
-                    src={`../${product?.productImage}`}
-                    alt={product.productName}
-                    onClick={() => handleProductClick(product.productId)}
-                    className="open-prod-detail"
-                  />
-                  <div
-                    className="flex blk-md open-prod-detail"
-                    onClick={() => handleProductClick(product.productId)}
-                  >
-                    <div>
-                      <h3>{product.productName}</h3>
-                      <p>${product.price.toFixed(2)}</p>
+                <div className="flex wrap">
+                  {similarProducts?.map((product) => (
+                    <div className="product" key={product.id}>
+                      <img
+                        src={`${BASEURL + product?.image}`}
+                        alt={product.name}
+                        onClick={() => handleProductClick(product.id)}
+                        className="open-prod-detail"
+                      />
+                      <div
+                        className="flex blk-md open-prod-detail"
+                        onClick={() => handleProductClick(product.id)}
+                      >
+                        <div>
+                          <h3>{product.name}</h3>
+                          <p>${product.price}</p>
+                        </div>
+
+                        <div className="rm-md">
+                          <p>⭐⭐⭐⭐⭐</p>
+                          <p>{product.rating}</p>
+                        </div>
+                      </div>
+
+                      <Addcart product={product}>
+                        <CartAction
+                          dataId={product.id}
+                          dataQuantity={product.quantity}
+                          incAction={incrementSimilarProduct}
+                          decAction={decrementSimilarProduct}
+                        />
+                      </Addcart>
                     </div>
-
-                    <div className="rm-md">
-                      <p>⭐⭐⭐⭐⭐</p>
-                      <p>{product.rating}</p>
-                    </div>
-                  </div>
-
-                  <Addcart product={product}>
-                    <CartAction
-                      dataId={product.productId}
-                      dataQuantity={product.quantity}
-                      incAction={incrementProduct}
-                      decAction={decrementProduct}
-                    />
-                  </Addcart>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </div>
         </div>
       </main>

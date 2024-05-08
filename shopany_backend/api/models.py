@@ -44,6 +44,7 @@ class Product(models.Model):
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     image = models.FileField(upload_to='carts/', blank=True, null=True)
     description = models.TextField(blank=True, null=True)
