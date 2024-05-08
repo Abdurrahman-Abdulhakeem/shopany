@@ -123,7 +123,23 @@ class UserDetailView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data, status=200)
     
+    def post(self, request, *args, **kwargs):
+        validator = FileExtensionValidator(allowed_extensions=['jpg', 'png', 'jpeg'])
+        
+        image_file = request.FILES.get("image")
+        if not image_file:
+            return Response({"message": "Please provide an image file"}, status=400)
+        try:
+            validator(image_file)
+        except:
+            return Response({"message": "file must be an image file with extension 'jpg', 'jpeg', or 'png"}, status=404)
+        user = request.user
+        user.image = image_file
+        user.save()
+        serializer = UserSerializer(user)
+        return Response({"message": "Profile picture saved successfully", "data": serializer.data}, status=200)
 
+    
 class CategoryView(APIView):
     
     def get(self, request, *args, **kwargs):
@@ -195,9 +211,6 @@ class AddProductToCart(APIView):
     
     def post(self, request, *args, **kwargs):
      
-        # validator = FileExtensionValidator(allowed_extensions=['jpg', 'png', 'jpeg'])
-        
-        # image_file = request.FILES["image"]
         product_id = request.data.get("product_id")
         product = Product.objects.get(id=product_id)
         if Cart.objects.filter(user=request.user).filter(product=product).exists():
@@ -220,12 +233,7 @@ class AddProductToCart(APIView):
             serializer.save(user=request.user)
             return Response({'message':"Product added successfully to cart", "data":serializer.data, "product_id": product_id}, status=201)
         return Response({'message':"Failed to add product to cart"}, status=400)
-    
-    # {
-    #     "product": 1,
-    #     "name": "product_add",
-    #     "price": 99.99
-    # }
+  
     
 class CartView(APIView):
     permission_classes = (IsAuthenticated, IsOwner)
@@ -270,9 +278,7 @@ class CartDetailView(APIView):
             return Response({"message": "Product deleted from cart", "id": id}, status=200)
         except Cart.DoesNotExist:
             return Response({"message": "No cart exists!"}, status=404)
-    # {
-    #     "update_item": "minus"
-    # }
+  
     
 class TotalCartPrice(APIView):
     permission_classes = (IsAuthenticated, )

@@ -8,8 +8,10 @@ import Base from "../components/Base";
 import { Hamburger } from "../components/Sidebar";
 
 import * as yup from "yup";
-import { useSelector } from "react-redux";
-import { getUserState } from "../redux/getUserSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserState, uploadImage } from "../redux/getUserSlice";
+import { BASEURL } from "../utils/useAxios";
+import Loader from "../components/Loader";
 
 function Profile() {
   const [showPassword, setShowPassword] = useState({
@@ -17,7 +19,17 @@ function Profile() {
     confirmPassword: false,
   });
 
-  const {userData} = useSelector(getUserState)
+  const dispatch = useDispatch();
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    // const reader = new FileReader();
+    // reader.readAsDataURL(file);
+
+    dispatch(uploadImage(file));
+  };
+
+  const { loading, userData } = useSelector(getUserState);
 
   const handleShowPassword = () => {
     setShowPassword((prev) => ({
@@ -63,12 +75,18 @@ function Profile() {
     <Base>
       <main className="dashboard">
         <Hamburger />
-
+        {loading && <Loader />}
         <div className="profile">
           <div className="profile-bg">
-            <img src="images/rrammy.jpg" alt="profile-bg" />
+            <img src={BASEURL + userData?.image} alt="profile-bg" />
             <div>
-              <input type="file" hidden id="profile-pic" accept="image/*" />
+              <input
+                type="file"
+                hidden
+                id="profile-pic"
+                accept="image/*"
+                onChange={handleFileUpload}
+              />
               <label for="profile-pic" className="btn">
                 Update Image
               </label>

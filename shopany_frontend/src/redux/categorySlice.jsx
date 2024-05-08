@@ -11,8 +11,8 @@ export const getCategories = createAsyncThunk(
       let errorMsg = "";
       if (error.response && error.response.data.error) {
         errorMsg = error.response.data.error[0];
-      } else if (error.response && error.response.message) {
-        errorMsg = error.response.message;
+      } else if (error.response && error.response.data.message) {
+        errorMsg = error.response.data.message;
       } else if (error.response && error.response.detail) {
         errorMsg = error.response.detail;
       } else {

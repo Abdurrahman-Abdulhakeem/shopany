@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axiosInstance from "../utils/useAxios";
+import axiosInstance, { axiosFormInstance } from "../utils/useAxios";
 import errorToast from "../utils/errorToast";
+import successToast from "../utils/successToast";
 
 export const getUser = createAsyncThunk("getUser/user", async (_, thunkAPI) => {
   try {
@@ -11,8 +12,8 @@ export const getUser = createAsyncThunk("getUser/user", async (_, thunkAPI) => {
     let errorMsg = "";
     if (error.response && error.response.data.error) {
       errorMsg = error.response.data.error[0];
-    } else if (error.response && error.response.message) {
-      errorMsg = error.response.message;
+    } else if (error.response && error.response.data.message) {
+      errorMsg = error.response.data.message;
     } else if (error.response && error.response.data.detail) {
       errorMsg = error.response.data.detail;
     } else {
@@ -23,6 +24,32 @@ export const getUser = createAsyncThunk("getUser/user", async (_, thunkAPI) => {
     return thunkAPI.rejectWithValue(errorMsg);
   }
 });
+
+export const uploadImage = createAsyncThunk('user/uploadImage', async (imageFile, thunkAPI) => {
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+  try {
+    await delay(1000)
+    const {data} = await axiosFormInstance.post("api/v1/user/", {image: imageFile} )
+    
+    successToast(data.message)
+    return data
+  }catch (error) {
+    let errorMsg = "";
+    if (error.response && error.response.data.error) {
+      errorMsg = error.response.data.error[0];
+    } else if (error.response && error.response.data.message) {
+      errorMsg = error.response.data.message;
+    } else if (error.response && error.response.data.detail) {
+      errorMsg = error.response.data.detail;
+    } else {
+      errorMsg = error.message;
+    }
+    errorToast(errorMsg);
+    console.log(errorMsg, error);
+    return thunkAPI.rejectWithValue(errorMsg);
+  }
+})
+
 
 const getUserSlice = createSlice({
   name: "getUser",
@@ -44,7 +71,17 @@ const getUserSlice = createSlice({
       })
       .addCase(getUser.rejected, (state, action) => {
         state.loading = false;
-      });
+      })
+      .addCase(uploadImage.fulfilled, (state, action) => {
+        state.userData.image = action.payload.data.image
+        state.loading = false;
+      })
+      .addCase(uploadImage.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(uploadImage.rejected, (state, action) => {
+        state.loading = false;
+      })
   },
 });
 

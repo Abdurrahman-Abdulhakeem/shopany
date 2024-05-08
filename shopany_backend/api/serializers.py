@@ -14,7 +14,15 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'username', 'fullname', 'first_name', 'last_name', 'email', 'phone_number', 'password', 'confirm_password'
+            'username', 
+            'fullname', 
+            'first_name',
+            'last_name',
+            'email', 
+            'phone_number',
+            'image',
+            'password',
+            'confirm_password'
         )
         
         
@@ -102,24 +110,4 @@ class CartSerializer(serializers.ModelSerializer):
     def get_product_amount(self, obj):
         return obj.total_price()
     
-        
-    def create(self, data):
-        
-        # image_file = self.context["request"].FILES["image"]
-        # if image_file:
-        #     data["image"] = image_file
-            
-        return Cart.objects.create(**data)
-    
-    # def validate(self, obj):
-        
-    #     validator = FileExtensionValidator(allowed_extensions=['jpg', 'png', 'jpeg'])
-        
-    #     # image_file = request.FILES["image"]
-        
-
-    #     if not validator(obj("image")):
-    #          raise serializers.ValidationError({"message": "File must be an Image"})
-        
-    #     return obj
         
