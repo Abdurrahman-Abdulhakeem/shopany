@@ -9,7 +9,7 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=200)
-    image = models.FileField(upload_to="users/", default="empty_logo.png")
+    image = models.FileField(upload_to="users/", default="users/empty_logo.png")
     
     USERNAME_FIELD = 'email'
     

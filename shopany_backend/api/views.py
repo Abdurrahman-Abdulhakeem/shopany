@@ -16,7 +16,7 @@ from .serializers import *
 from .permissions import *
 
 import random
-
+import re
 # Create your views here.
 
 class LoginView(APIView):
@@ -132,13 +132,41 @@ class UserDetailView(APIView):
         try:
             validator(image_file)
         except:
-            return Response({"message": "file must be an image file with extension 'jpg', 'jpeg', or 'png"}, status=404)
+            return Response({"message": "file must be an image file with extension 'jpg', 'jpeg', or 'png"}, status=400)
         user = request.user
         user.image = image_file
         user.save()
         serializer = UserSerializer(user)
         return Response({"message": "Profile picture saved successfully", "data": serializer.data}, status=200)
+    
 
+class PasswordChangeView(APIView):
+    permission_classes = (IsAuthenticated, IsOwner)
+    
+    def post(self, request, *args, **kwargs):
+        new_password = request.data.get('new_password')
+        confirm_new_password = request.data.get('confirm_new_password')
+        
+        if not new_password:
+            return Response({"message": "Please enter new password"}, status=400)
+        if not confirm_new_password:
+            return Response({"message": "Please confirm your new password"}, status=400)
+        
+        if not re.search(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', new_password):
+            return Response({"message": "Password must contains at least 8 characters long one uppercase letter, one lowercase letter, one digit and one special character"}, status=400)
+        if not new_password == confirm_new_password:
+            return Response({"message": "New password must match confirm password"}, status=400)
+        
+        user = request.user
+        
+        paswd_check = check_password(new_password, user.password)
+        if paswd_check:
+            return Response({"message": "New password cannot be old password"}, status=400)
+        
+        user.set_password(new_password)
+        user.save()
+        return Response({"message": "Password was successfully changed"}, status=200)
+    
     
 class CategoryView(APIView):
     
@@ -158,8 +186,15 @@ class ProductView(APIView):
         
         if query is not None:
                 queryset = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
-                serializeProduct = ProductSerializer(queryset, many=True)
-                return Response(serializeProduct.data)
+                recent_products = queryset.order_by('-created')[:5]
+                best_selling = queryset.order_by('-rating')[:5]
+                
+                serialized_data = {
+                    "data": ProductSerializer(queryset, many=True).data,
+                    "recent_products": ProductSerializer(recent_products, many=True).data,
+                    "best_selling": ProductSerializer(best_selling, many=True).data
+                }
+                return Response(serialized_data)
 
         
         if category is not None:
@@ -169,8 +204,17 @@ class ProductView(APIView):
         
         queryset = Product.objects.all()
         
+        recent_products = queryset.order_by('-created')[:5]
+        best_selling = queryset.order_by('-rating')[:5]
+        
+        serialized_data = {
+            "data": ProductSerializer(queryset, many=True).data,
+            "recent_products": ProductSerializer(recent_products, many=True).data,
+            "best_selling": ProductSerializer(best_selling, many=True).data
+        }
+        
         serializeProduct = ProductSerializer(queryset, many=True)
-        return Response(serializeProduct.data)
+        return Response(serialized_data)
     
 
     
