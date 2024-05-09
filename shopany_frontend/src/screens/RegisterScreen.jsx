@@ -2,12 +2,16 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ErrorMessage } from "@hookform/error-message";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { registerState, registerUser } from "../redux/registerSlice";
+import MiniSpinner from "../components/MiniSpinner";
 
 function RegisterScreen() {
+  const {loading} = useSelector(registerState)
   const [showPassword, setShowPassword] = useState({
     password: false,
     confirmPassword: false,
@@ -54,12 +58,18 @@ function RegisterScreen() {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm({
     resolver: yupResolver(validationSchema),
   });
 
+
+  const dispatch = useDispatch()
+
   const onSubmit = (data) => {
-    console.log(data);
+
+    dispatch(registerUser(data)).then(() => reset())
+    
   };
 
   return (
@@ -183,7 +193,9 @@ function RegisterScreen() {
           />
         </div>
 
-        <input type="submit" value="Sign up" className="btn" />
+        <button type="submit" class="btn full" disabled={loading}>
+          {loading ? <MiniSpinner /> : "Sign Up"}
+        </button>
 
         <p>
           Already have an account?{" "}

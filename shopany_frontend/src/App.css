@@ -114,8 +114,6 @@ body {
   }
 }
 
-
-
 @keyframes spinner-anim-one {
   25% {
     transform: scale(0.3);
@@ -191,6 +189,7 @@ input::placeholder {
   color: #fff;
   overflow-y: auto;
   overflow-x: hidden;
+  z-index: 100;
 }
 
 .sidebar nav {
@@ -444,7 +443,6 @@ input::placeholder {
   color: #fff;
   border-radius: 7px;
   cursor: pointer;
-
 }
 
 .full.btn {
@@ -626,8 +624,6 @@ table tbody td img {
   margin: 10px 0px 20px;
 }
 
-
-
 .register-container div input[type="submit"] {
   font-weight: 500;
   font-size: 1.5em;
@@ -673,7 +669,6 @@ table tbody td img {
 
 .error-input {
   border-color: red !important;
-  
 }
 
 .pass-eye-container {
@@ -686,8 +681,6 @@ table tbody td img {
   color: slateblue;
   cursor: pointer;
 }
-
-
 
 /* Product detail */
 .product-detail .flex {
@@ -724,6 +717,26 @@ table tbody td img {
 
 .main-hamburger {
   display: none;
+}
+
+.error-screen {
+  height: 100vh;
+  width: 100vw;
+  background-color: slateblue;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-screen p {
+  font-size: 20px;
+  cursor: pointer;
+  text-align: center;
+  margin: 20px 0px;
+}
+.error-screen p:hover {
+  opacity: 0.8;
 }
 
 @media (max-width: 1070px) {
@@ -917,7 +930,6 @@ table tbody td img {
     height: 150px;
     max-width: 130px;
     margin-right: 10px;
-    
   }
 
   .product-detail {
@@ -937,6 +949,12 @@ table tbody td img {
   .products.in-detail {
     margin-right: 30px;
   }
+
+  .register {
+    width: 90%;
+    margin: 0px 30px;
+  }
+
 }
 
 @media (max-width: 500px) {
@@ -975,8 +993,5 @@ table tbody td img {
     display: none;
   }
 
-  .register {
-    width: 90%;
-    margin: 0px 40px;
-  }
+
 }

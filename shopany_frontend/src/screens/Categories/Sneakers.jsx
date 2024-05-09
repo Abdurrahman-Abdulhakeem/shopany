@@ -24,7 +24,6 @@ function Sneakers() {
   const { loading: addCartLoading } = useSelector(cartState);
   const { userData } = useSelector(getUserState);
 
-  console.log(productCategory);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -48,11 +47,6 @@ function Sneakers() {
           <main className="dashboard category">
             <div className="flex search">
               <Hamburger />
-
-              {/* <input type="text" placeholder="Search any" />
-              <button className="btn" type="submit">
-                Search
-              </button> */}
             </div>
 
             <h1>Welcome {userData?.first_name}</h1>

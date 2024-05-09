@@ -23,7 +23,6 @@ export const getCarts = createAsyncThunk(
       // await delay(1000);
 
       const { data } = await axiosInstance.get(`api/v1/carts/`);
-      console.log(data);
 
       // cachedData = data;
       // lastTimeFetch = currentTime;

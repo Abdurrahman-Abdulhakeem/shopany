@@ -20,6 +20,7 @@ import HamProvider from "./components/providers/HamProvider";
 import { userLoginState } from "./redux/userLoginSlice";
 import { getUser } from "./redux/getUserSlice";
 import LoginRequired from "./utils/LoginRequired";
+import ErrorScreen from "./components/ErrorScreen";
 
 function App() {
   const { user } = useSelector(userLoginState);
@@ -35,6 +36,7 @@ function App() {
     <Router>
       <HamProvider>
         <Routes>
+          <Route path="*" element={<ErrorScreen />} />
           <Route path="/" index element={<LoginScreen />} />
 
           <Route path="/login" element={<LoginScreen />} />
@@ -50,15 +52,57 @@ function App() {
               </LoginRequired>
             }
           />
-          <Route path="/categories/sneakers" element={<Sneakers />} />
-          <Route path="/categories/foodstuffs" element={<FoodStuffs />} />
-          <Route path="/categories/groceries" element={<Groceries />} />
+          <Route
+            path="/categories/sneakers"
+            element={
+              <LoginRequired>
+                <Sneakers />
+              </LoginRequired>
+            }
+          />
+          <Route
+            path="/categories/foodstuffs"
+            element={
+              <LoginRequired>
+                <FoodStuffs />
+              </LoginRequired>
+            }
+          />
+          <Route
+            path="/categories/groceries"
+            element={
+              <LoginRequired>
+                <Groceries />
+              </LoginRequired>
+            }
+          />
 
-          <Route path="/product/:productId" element={<ProductDetail />} />
+          <Route
+            path="/product/:productId"
+            element={
+              <LoginRequired>
+                <ProductDetail />
+              </LoginRequired>
+            }
+          />
 
-          <Route path="/cart" element={<Cart />} />
+          <Route
+            path="/cart"
+            element={
+              <LoginRequired>
+                <Cart />
+              </LoginRequired>
+            }
+          />
 
-          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/profile"
+            element={
+              <LoginRequired>
+                <Profile />
+              </LoginRequired>
+            }
+          />
         </Routes>
       </HamProvider>
 

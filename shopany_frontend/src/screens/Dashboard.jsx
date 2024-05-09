@@ -20,9 +20,11 @@ import { getUserState } from "../redux/getUserSlice";
 
 import QueryProduct from "./Components/Dashboard/QueryProduct";
 import ProductCategory from "./Components/Dashboard/ProductCategory";
+import { BASEURL } from "../utils/useAxios";
 
 function Dashboard() {
-  const { loading, queryProducts, query } = useSelector(productState);
+  const { loading, queryProducts, query, bestSelling, recentProducts } =
+    useSelector(productState);
   const { categories } = useSelector(categoryState);
   const { loading: addCartLoading } = useSelector(cartState);
   const { userData } = useSelector(getUserState);
@@ -59,7 +61,6 @@ function Dashboard() {
     dispatch(resetQuery());
   };
 
-  console.log(queryProducts);
 
   return (
     <Base>
@@ -128,36 +129,25 @@ function Dashboard() {
               <h2>Recently Added</h2>
 
               <div className="products">
-                <div className="product flex">
-                  <img src="images/shop-fone.PNG" alt="" />
-                  <div>
-                    <h3>Couple's phone</h3>
-                    <p>
-                      ⭐⭐⭐⭐⭐ <span style={{ marginLeft: "10px" }}>4.6</span>
-                    </p>
-                    <p>$300</p>
+                {recentProducts?.map((product) => (
+                  <div
+                    className="product flex"
+                    key={product.id}
+                    onClick={() => handleProductClick(product.id)}
+                  >
+                    <img src={BASEURL + product.image} alt={product.name} />
+                    <div>
+                      <h3>{product.name}</h3>
+                      <p>
+                        ⭐⭐⭐⭐⭐{" "}
+                        <span style={{ marginLeft: "10px" }}>
+                          {product.rating}
+                        </span>
+                      </p>
+                      <p>${product.price}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="product flex">
-                  <img src="images/shop-fone.PNG" alt="" />
-                  <div>
-                    <h3>Couple's phone</h3>
-                    <p>
-                      ⭐⭐⭐⭐⭐ <span style={{ marginLeft: "10px" }}>4.6</span>
-                    </p>
-                    <p>$300</p>
-                  </div>
-                </div>
-                <div className="product flex">
-                  <img src="images/shop-fone.PNG" alt="" />
-                  <div>
-                    <h3>Couple's phone</h3>
-                    <p>
-                      ⭐⭐⭐⭐⭐ <span style={{ marginLeft: "10px" }}>4.6</span>
-                    </p>
-                    <p>$300</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
@@ -165,36 +155,25 @@ function Dashboard() {
               <h2>Best Selling</h2>
 
               <div className="products">
-                <div className="product flex">
-                  <img src="images/shop-fone.PNG" alt="" />
-                  <div>
-                    <h3>Couple's phone</h3>
-                    <p>
-                      ⭐⭐⭐⭐⭐ <span style={{ marginLeft: "10px" }}>4.6</span>
-                    </p>
-                    <p>$300</p>
+                {bestSelling?.map((product) => (
+                  <div
+                    className="product flex"
+                    key={product.id}
+                    onClick={() => handleProductClick(product.id)}
+                  >
+                    <img src={BASEURL + product.image} alt={product.name} />
+                    <div>
+                      <h3>{product.name}</h3>
+                      <p>
+                        ⭐⭐⭐⭐⭐{" "}
+                        <span style={{ marginLeft: "10px" }}>
+                          {product.rating}
+                        </span>
+                      </p>
+                      <p>${product.price}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="product flex">
-                  <img src="images/shop-fone.PNG" alt="" />
-                  <div>
-                    <h3>Couple's phone</h3>
-                    <p>
-                      ⭐⭐⭐⭐⭐ <span style={{ marginLeft: "10px" }}>4.6</span>
-                    </p>
-                    <p>$300</p>
-                  </div>
-                </div>
-                <div className="product flex">
-                  <img src="images/shop-fone.PNG" alt="" />
-                  <div>
-                    <h3>Couple's phone</h3>
-                    <p>
-                      ⭐⭐⭐⭐⭐ <span style={{ marginLeft: "10px" }}>4.6</span>
-                    </p>
-                    <p>$300</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </section>

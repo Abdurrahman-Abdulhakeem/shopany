@@ -23,11 +23,12 @@ function LoginScreen() {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
-    dispatch(login(data));
+    dispatch(login(data)).then(() => reset());
+    
   };
 
   useEffect(() => {

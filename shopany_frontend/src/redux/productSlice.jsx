@@ -98,7 +98,9 @@ const productSlice = createSlice({
     productsByCategories: {},
     productCategory: [],
     queryProducts: [],
-    query: null,
+    bestSelling: [],
+    recentProducts: [],
+    query: '',
     currentProduct: null,
     similarProducts: {},
     loading: false,
@@ -253,7 +255,7 @@ const productSlice = createSlice({
     builder
       .addCase(getProducts.fulfilled, (state, action) => {
         /////Get products by categories
-        action.payload.forEach((product) => {
+        action.payload.data.forEach((product) => {
           const categoryIds = new Set(
             product.categories.map((category) => category.id)
           );
@@ -277,7 +279,9 @@ const productSlice = createSlice({
           });
         });
 
-        state.products = action.payload;
+        state.products = action.payload.data;
+        state.recentProducts = action.payload.recent_products
+        state.bestSelling = action.payload.best_selling
         state.loading = false;
         state.error = false;
       })
@@ -334,7 +338,7 @@ const productSlice = createSlice({
         state.loading = true;
       })
       .addCase(getSearchProducts.fulfilled, (state, action) => {
-        state.queryProducts = action.payload;
+        state.queryProducts = action.payload.data;
         state.loading = false;
       })
       .addCase(getSearchProducts.pending, (state, action) => {

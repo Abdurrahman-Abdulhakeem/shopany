@@ -9,7 +9,11 @@ import { Hamburger } from "../components/Sidebar";
 
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserState, uploadImage } from "../redux/getUserSlice";
+import {
+  changePassword,
+  getUserState,
+  uploadImage,
+} from "../redux/getUserSlice";
 import { BASEURL } from "../utils/useAxios";
 import Loader from "../components/Loader";
 
@@ -62,13 +66,15 @@ function Profile() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(setPasswordSchema),
   });
 
   const submitHandler = (data) => {
-    console.log(data);
+    dispatch(changePassword(data));
+    reset();
   };
 
   return (
