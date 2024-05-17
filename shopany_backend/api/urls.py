@@ -17,4 +17,8 @@ urlpatterns = [
     path('cart/<int:id>/', CartDetailView.as_view()),
     path('carts/delete/', DeleteCart.as_view()),
     path('carts/totalprice/', TotalCartPrice.as_view()),
+    
+    path('carts/payout/', PaymentView.as_view()),
+    path('carts/payout/verify/', PaymentVerifyView.as_view()),
+    
 ]

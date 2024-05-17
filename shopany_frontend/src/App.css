@@ -534,8 +534,9 @@ table tbody td img {
   margin-bottom: 30px;
 }
 
-.checkout input {
+.checkout button.checkout-btn {
   padding: 10px 30px;
+  background-color: slateblue;
 }
 
 .checkout a {

@@ -87,7 +87,7 @@ function LoginScreen() {
           />
         </div>
 
-        <button type="submit" class="btn full" disabled={loading}>
+        <button type="submit" className="btn full" disabled={loading}>
           {loading ? <MiniSpinner /> : "Login"}
         </button>
 

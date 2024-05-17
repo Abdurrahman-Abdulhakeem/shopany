@@ -1,6 +1,7 @@
 import axios from "axios";
 
-export const BASEURL = "http://localhost:8000/";
+export const LOCALBASEURL = "http://localhost:8000/";
+export const BASEURL = "https://rammy.pythonanywhere.com/";
 
 const getToken = () =>
   localStorage.getItem("shopany-user")

@@ -15,8 +15,12 @@ from .models import *
 from .serializers import *
 from .permissions import *
 
+from django.conf import settings
+
+import uuid
 import random
 import re
+import requests
 # Create your views here.
 
 class LoginView(APIView):
@@ -349,3 +353,62 @@ class DeleteCart(APIView):
             return Response({"message": "No product in cart"}, status=200)
         except Cart.DoesNotExist:
             return Response({"message": "No cart related"}, status=404)
+
+
+class PaymentView(APIView):
+    
+    def post(self, request, *args, **kwargs):
+    
+       cart = Cart.objects.filter(user=request.user)
+    
+       amount = int(sum(item.price * item.quantity for item in cart))
+       email = request.user.email
+
+
+       if not amount > 0:
+           return Response({"message": "Nothing to pay for"}, status=400)
+       
+       data = {
+           "amount": amount * 100,
+           "email": email,
+           "reference": str(uuid.uuid4()),
+           "callback_url": "http://localhost:3000/dashboard"
+       }
+       
+       headers = {
+           "Authorization": f"Bearer {settings.PAYSTACK_KEY}",
+           "Content-Type": "application/json" 
+       }
+       res = requests.post("https://api.paystack.co/transaction/initialize", headers=headers, json=data)
+       
+       if res.status_code == 200:
+           json_response = res.json()["data"]
+           return Response({"payment_url": json_response["authorization_url"],"reference": json_response["reference"]}, status=200)
+       else:
+           return Response({"message": res.json()["message"]}, status=res.status_code)
+       
+
+class PaymentVerifyView(APIView):
+    
+    def post(self, request, *args, **kwargs):
+        
+        cart = Cart.objects.filter(user=request.user)
+        reference = request.data["reference"]
+        
+        headers = {
+            "Authorization": f"Bearer {settings.PAYSTACK_KEY}",
+            "Content-Type": "application/json" 
+        }
+        
+        response = requests.get(f'https://api.paystack.co/transaction/verify/{reference}', headers=headers)
+        
+        if response.status_code == 200:
+            if response.json()["data"]["status"] == 'success':
+                
+                cart.delete()
+                return Response({'status': 'success', 'message': 'Payment successful'}, status=200)
+            return Response({'status': 'failed', 'message': 'Payment failed'}, status=400)
+        
+        return Response({"message": response.json()["message"]}, status=response.status_code)
+       
+       

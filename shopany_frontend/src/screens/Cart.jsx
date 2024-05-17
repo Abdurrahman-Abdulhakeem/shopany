@@ -17,16 +17,18 @@ import {
   deleteCart,
   totalCartPrice,
   deleteCarts,
+  payoutCarts,
 } from "../redux/cartSlice";
 
 import { BASEURL } from "../utils/useAxios";
 
 function Cart() {
   const dispatch = useDispatch();
-  const { carts, totalPrice, isModalOpen, loading } = useSelector(cartState);
+  const { carts, totalPrice, isModalOpen, loading, paymentLoading } =
+    useSelector(cartState);
 
   // /////if carts.length > 0 to dispatch totalPrice
-
+// console.log(activePaymentReference)
   useEffect(() => {
     if (carts.length > 0) {
       dispatch(totalCartPrice());
@@ -145,7 +147,15 @@ function Cart() {
             <button className="btn">
               <Link to="/dashboard">Continue shopping</Link>
             </button>
-            <input type="submit" value="Checkout" className="btn" />
+
+            <button
+              type="submit"
+              className="btn checkout-btn"
+              disabled={paymentLoading}
+              onClick={() => dispatch(payoutCarts())}
+            >
+              {paymentLoading ? "Processing..." : "Checkout"}
+            </button>
           </div>
         </div>
       </main>
